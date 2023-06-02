@@ -101,6 +101,27 @@ aumentarCansancio unValor = modificarCansancio (+ unValor)
 multiplicarCansancio :: Float -> Jugador -> Jugador
 multiplicarCansancio unValor = modificarCansancio (* unValor)
 
+--Punto 5:
+ganarPartido :: Equipo -> Equipo -> Equipo
+ganarPartido unEquipo = (jugarPartido . ganadorDelEncuentro unEquipo)
 
+ganadorDelEncuentro :: Equipo -> Equipo -> Equipo
+ganadorDelEncuentro = mayorSegun (sumatoriaDelPromedioDeGol . onceTitular)
 
+mayorSegun :: (Ord b)=>(a -> b) -> a -> a -> a
+mayorSegun transformador unValor otroValor
+    | transformador unValor > transformador otroValor = unValor
+    | otherwise                                       = otroValor
+
+onceTitular :: Equipo -> [Jugador]
+onceTitular = (take 11 . ordenarPorMenorCansancio . jugadores)
+
+ordenarPorMenorCansancio :: [Jugador] -> [Jugador]
+ordenarPorMenorCansancio = quickSort (esMenorSegun cansancio)
+
+esMenorSegun :: (Ord b)=>(a -> b) -> a -> a -> Bool
+esMenorSegun f unValor otroValor = f unValor < f otroValor
+
+sumatoriaDelPromedioDeGol :: [Jugador] -> Float
+sumatoriaDelPromedioDeGol = foldr ((+) . promedioDeGol) 0
 
