@@ -131,6 +131,10 @@ campeonDelTorneo = foldr1 ganarPartido
 
 campeonDelTorneoV2 :: [Equipo] -> Equipo
 campeonDelTorneoV2 = foldl1 ganarPartido
-
+--Si no me equivoco, en este caso usar foldl1 o foldr1 es lo mismo y no cambia el resultado.
 --Punto 7:
+elGroso :: [Equipo] -> String
+elGroso = (nombre . primerFigura . jugadores . campeonDelTorneo)
 
+primerFigura :: [Jugador] -> Jugador
+primerFigura = head . soloFiguras
