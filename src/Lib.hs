@@ -75,7 +75,31 @@ esFarandulero = (flip elem jugadoresFaranduleros . nombre)
 esJoven :: Jugador -> Bool
 esJoven = ((<27) . edad)
 
+--Punto 4:
+jugarPartido :: Equipo -> Equipo
+jugarPartido  = mapearJugadores (map cambiarCansancio)
 
+mapearJugadores ::([Jugador]->[Jugador]) -> Equipo -> Equipo
+mapearJugadores f (unNombre, unGrupo, unosJugadores) = (unNombre, unGrupo, f unosJugadores)
+
+cambiarCansancio :: Jugador -> Jugador
+cambiarCansancio unJugador
+    | esFiguritaDificil unJugador = ponerOtroCansancio 50      unJugador
+    | esJoven unJugador           = multiplicarCansancio 1.1   unJugador
+    | esFigura unJugador          = aumentarCansancio 10       unJugador
+    | otherwise                   = multiplicarCansancio 1.5   unJugador
+
+ponerOtroCansancio :: Float -> Jugador -> Jugador
+ponerOtroCansancio nuevoCansancio unJugador = unJugador {cansancio = nuevoCansancio}
+
+modificarCansancio :: (Float -> Float) -> Jugador -> Jugador
+modificarCansancio modificacion unJugador = unJugador {cansancio = (modificacion . cansancio) unJugador}
+
+aumentarCansancio :: Float -> Jugador -> Jugador
+aumentarCansancio unValor = modificarCansancio (+ unValor)
+
+multiplicarCansancio :: Float -> Jugador -> Jugador
+multiplicarCansancio unValor = modificarCansancio (* unValor)
 
 
 
