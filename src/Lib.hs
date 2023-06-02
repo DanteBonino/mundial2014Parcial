@@ -138,3 +138,9 @@ elGroso = (nombre . primerFigura . jugadores . campeonDelTorneo)
 
 primerFigura :: [Jugador] -> Jugador
 primerFigura = head . soloFiguras
+
+--Punto 8:
+--a) En todos los casos donde se usó map, filter, any, flip, fold, ya que son funciones que reciben otras como argumentos o parámetros. Sí se crearon funciones de ordenSuperior, como por ejemplo, mapearJugadores. En ese caso particular
+-- sirve para crear una abstracción con la que se puedan crear todas las funciones cuya lógica implica modificar de alguna forma los jugadores de un equipo. Entonces, sirve para reucir código, ya que no hay lógica repetido, y, por ende, para reducir la posibilidad de errores.
+--b) Para las funciones que requieran verificar todos los jugadores por "x" motivo, eso va a ser un problema, ya que nunca va a terminar de verificar todos los jugadores, dado que son infinitos. En cambio, las funciones que no requieran nada de los jugadores o que no necesiten recorrer toda la lista de jugadores para terminar,
+-- no van a suponer un problema. También puede haber casos donde que loopee o no dependa de cómo esté formada la lista y la condición para seguir o no recorriendola. 
