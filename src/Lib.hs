@@ -49,10 +49,33 @@ tieneFarandulero :: Equipo -> Bool
 tieneFarandulero = (algunoEsFarandulero . jugadores)
 
 algunoEsFarandulero :: [Jugador] -> Bool
-algunoEsFarandulero = any (flip elem jugadoresFaranduleros . nombre)
+algunoEsFarandulero = any (esFarandulero . nombre)
 
 jugadoresFaranduleros :: [String]
 jugadoresFaranduleros = ["Maxi Lopez", "Icardi", "Aguero", "Caniggia", "Demichelis"]
+
+--Punto 3:
+type Grupo = Char
+figuritasDificiles :: Grupo -> [Equipo] -> [String]
+figuritasDificiles unGrupo = (concatMap (map nombre . filter (esFiguritaDificil)  . jugadores) . equiposDelGrupo unGrupo)
+
+
+equiposDelGrupo :: Grupo -> [Equipo] -> [Equipo]
+equiposDelGrupo unGrupo = filter ((== unGrupo) . grupo)
+
+grupo :: Equipo -> Grupo
+grupo (_, unGrupo, _) = unGrupo
+
+esFiguritaDificil :: Jugador -> Bool
+esFiguritaDificil unJugador = esFigura unJugador && esJoven unJugador && (not . esFarandulero) unJugador
+
+esFarandulero :: Jugador -> Bool
+esFarandulero = (flip elem jugadoresFaranduleros . nombre)
+
+esJoven :: Jugador -> Bool
+esJoven = ((<27) . edad)
+
+
 
 
 
