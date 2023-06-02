@@ -125,3 +125,12 @@ esMenorSegun f unValor otroValor = f unValor < f otroValor
 sumatoriaDelPromedioDeGol :: [Jugador] -> Float
 sumatoriaDelPromedioDeGol = foldr ((+) . promedioDeGol) 0
 
+--Punto 6:
+campeonDelTorneo :: [Equipo] -> Equipo
+campeonDelTorneo = foldr1 ganarPartido
+
+campeonDelTorneoV2 :: [Equipo] -> Equipo
+campeonDelTorneoV2 = foldl1 ganarPartido
+
+--Punto 7:
+
