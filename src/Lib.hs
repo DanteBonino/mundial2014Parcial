@@ -16,6 +16,8 @@ aguero = Jugador "Aguero" 24 5 90 5.0
 
 --Los equipos como tuplas
 equipo1 = ("Lo Que Vale Es El Intento", 'F', [martin, juan, maxi])
+equipo2 = ("asd", 'A', [messi, aguero])
+equipo3 = ("a", 'A', [messi, messi])
 losDeSiempre = ( "Los De Siempre", 'F', [jonathan, lean, brian])
 restoDelMundo = ("Resto del Mundo", 'A', [garcia, messi, aguero])
 
@@ -29,7 +31,7 @@ data Jugador = Jugador{
     promedioDeGol :: Float,
     habilidad     :: Int,
     cansancio     :: Float
-}
+}deriving (Show)
 type Equipo = (String, Char, [Jugador])
 
 figuras :: Equipo -> [Jugador]
@@ -49,16 +51,16 @@ tieneFarandulero :: Equipo -> Bool
 tieneFarandulero = (algunoEsFarandulero . jugadores)
 
 algunoEsFarandulero :: [Jugador] -> Bool
-algunoEsFarandulero = any (esFarandulero . nombre)
+algunoEsFarandulero = any (esFarandulero)
 
 jugadoresFaranduleros :: [String]
 jugadoresFaranduleros = ["Maxi Lopez", "Icardi", "Aguero", "Caniggia", "Demichelis"]
 
 --Punto 3:
 type Grupo = Char
+
 figuritasDificiles :: Grupo -> [Equipo] -> [String]
 figuritasDificiles unGrupo = (concatMap (map nombre . filter (esFiguritaDificil)  . jugadores) . equiposDelGrupo unGrupo)
-
 
 equiposDelGrupo :: Grupo -> [Equipo] -> [Equipo]
 equiposDelGrupo unGrupo = filter ((== unGrupo) . grupo)
@@ -77,20 +79,20 @@ esJoven = ((<27) . edad)
 
 --Punto 4:
 jugarPartido :: Equipo -> Equipo
-jugarPartido  = mapearJugadores (map cambiarCansancio)
+jugarPartido  = mapearJugadores (map cansarseAlJugar)
 
 mapearJugadores ::([Jugador]->[Jugador]) -> Equipo -> Equipo
 mapearJugadores f (unNombre, unGrupo, unosJugadores) = (unNombre, unGrupo, f unosJugadores)
 
-cambiarCansancio :: Jugador -> Jugador
-cambiarCansancio unJugador
+cansarseAlJugar :: Jugador -> Jugador
+cansarseAlJugar unJugador
     | esFiguritaDificil unJugador = ponerOtroCansancio 50      unJugador
     | esJoven unJugador           = multiplicarCansancio 1.1   unJugador
     | esFigura unJugador          = aumentarCansancio 10       unJugador
-    | otherwise                   = multiplicarCansancio 1.5   unJugador
+    | otherwise                   = multiplicarCansancio 2     unJugador
 
 ponerOtroCansancio :: Float -> Jugador -> Jugador
-ponerOtroCansancio nuevoCansancio unJugador = unJugador {cansancio = nuevoCansancio}
+ponerOtroCansancio nuevoCansancio  = modificarCansancio (const nuevoCansancio) 
 
 modificarCansancio :: (Float -> Float) -> Jugador -> Jugador
 modificarCansancio modificacion unJugador = unJugador {cansancio = (modificacion . cansancio) unJugador}
@@ -125,22 +127,25 @@ esMenorSegun f unValor otroValor = f unValor < f otroValor
 sumatoriaDelPromedioDeGol :: [Jugador] -> Float
 sumatoriaDelPromedioDeGol = foldr ((+) . promedioDeGol) 0
 
+--Otra versión de sumatoriaDeLPromedioDeGol que es mejor según mi tutor: Hay que favorecer abstracciones de mayor nivel al fold donde se pueda
+
+sumatoriaDelPromedioDeGolV2 :: [Jugador] -> Float
+sumatoriaDelPromedioDeGolV2 = (sum . map promedioDeGol)
+
 --Punto 6:
 campeonDelTorneo :: [Equipo] -> Equipo
 campeonDelTorneo = foldr1 ganarPartido
 
 campeonDelTorneoV2 :: [Equipo] -> Equipo
 campeonDelTorneoV2 = foldl1 ganarPartido
---Si no me equivoco, en este caso usar foldl1 o foldr1 es lo mismo y no cambia el resultado.
+
+campeonDelTorneoV3 :: [Equipo] -> Equipo
+campeonDelTorneoV3 [unEquipo] = unEquipo
+campeonDelTorneoV3 (unEquipo : otroEquipo : restoDeEquipos) = campeonDelTorneoV3 (ganarPartido unEquipo otroEquipo :  restoDeEquipos)
+
 --Punto 7:
 elGroso :: [Equipo] -> String
 elGroso = (nombre . primerFigura . jugadores . campeonDelTorneo)
 
 primerFigura :: [Jugador] -> Jugador
 primerFigura = head . soloFiguras
-
---Punto 8:
---a) En todos los casos donde se usó map, filter, any, flip, fold, ya que son funciones que reciben otras como argumentos o parámetros. Sí se crearon funciones de ordenSuperior, como por ejemplo, mapearJugadores. En ese caso particular
--- sirve para crear una abstracción con la que se puedan crear todas las funciones cuya lógica implica modificar de alguna forma los jugadores de un equipo. Entonces, sirve para reucir código, ya que no hay lógica repetido, y, por ende, para reducir la posibilidad de errores.
---b) Para las funciones que requieran verificar todos los jugadores por "x" motivo, eso va a ser un problema, ya que nunca va a terminar de verificar todos los jugadores, dado que son infinitos. En cambio, las funciones que no requieran nada de los jugadores o que no necesiten recorrer toda la lista de jugadores para terminar,
--- no van a suponer un problema. También puede haber casos donde que loopee o no dependa de cómo esté formada la lista y la condición para seguir o no recorriendola. 
